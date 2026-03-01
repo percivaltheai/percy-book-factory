@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Percy's Book Factory</title>
+    <title>Percy's Book Factory - THE LAST TIDE</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         :root {
@@ -37,6 +37,24 @@
         }
         header h1 { font-size: 1.5rem; display: flex; align-items: center; gap: 10px; }
         .lobster { font-size: 1.8rem; }
+        
+        /* Tabs */
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: all 0.2s;
+        }
+        .tab:hover { color: var(--text-main); }
+        .tab.active {
+            background: var(--accent);
+            color: var(--bg-dark);
+            border-color: var(--accent);
+        }
         
         /* Progress Bar */
         .progress-section {
@@ -112,7 +130,9 @@
             padding: 12px;
             border-bottom: 1px solid var(--border);
             gap: 12px;
+            cursor: pointer;
         }
+        .chapter-item:hover { background: rgba(88, 166, 255, 0.1); }
         .chapter-item:last-child { border-bottom: none; }
         .chapter-num {
             width: 32px;
@@ -179,13 +199,41 @@
         .activity-item:last-child { border-bottom: none; }
         .activity-time { color: var(--accent); font-size: 0.75rem; }
         
-        /* Last Updated */
-        .footer {
-            text-align: center;
-            padding: 20px;
-            color: var(--text-muted);
-            font-size: 0.8rem;
+        /* Chapter Content */
+        .chapter-content { display: none; }
+        .chapter-content.active { display: block; }
+        .chapter-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
         }
+        .chapter-text {
+            white-space: pre-wrap;
+            font-family: Georgia, serif;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: var(--text-main);
+        }
+        
+        /* Branches */
+        .branch {
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .branch:hover { border-color: var(--accent); }
+        .branch.selected { border-color: var(--accent-green); background: rgba(63, 185, 80, 0.1); }
+        .branch-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .branch-path { font-weight: 600; color: var(--accent); }
+        .branch-direction { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 8px; }
+        .branch-consequence { font-size: 0.85rem; color: var(--text-muted); font-style: italic; }
         
         /* Status Indicator */
         .indicator {
@@ -197,6 +245,20 @@
         }
         .indicator-green { background: var(--accent-green); }
         .indicator-yellow { background: var(--accent-yellow); }
+        
+        /* Back button */
+        .back-btn {
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+        .back-btn:hover { color: var(--text-main); border-color: var(--text-muted); }
+        
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
@@ -206,184 +268,273 @@
             <div id="status"><span class="indicator indicator-green"></span>Live</div>
         </header>
         
-        <!-- Progress Section -->
-        <div class="progress-section">
-            <div class="progress-header">
-                <span><strong>THE LAST TIDE</strong> — Near-Future AI Sci-Fi</span>
-                <span id="percentage">0%</span>
+        <!-- Tabs -->
+        <div class="tabs">
+            <div class="tab active" data-tab="progress">📊 Progress</div>
+            <div class="tab" data-tab="read">📖 Read</div>
+            <div class="tab" data-tab="branches">🧭 Branches</div>
+        </div>
+        
+        <!-- PROGRESS TAB -->
+        <div id="tab-progress" class="tab-content">
+            <!-- Progress Section -->
+            <div class="progress-section">
+                <div class="progress-header">
+                    <span><strong>THE LAST TIDE</strong> — Near-Future Sci-Fi</span>
+                    <span id="percentage">10%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 10%">7,800 / 80,000</div>
+                </div>
+                <div class="stats-row">
+                    <div class="stat">
+                        <div class="stat-value" id="currentWords">7,800</div>
+                        <div class="stat-label">Words Written</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">80,000</div>
+                        <div class="stat-label">Target</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="chaptersDone">3</div>
+                        <div class="stat-label">Chapters Done</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="estChapters">20</div>
+                        <div class="stat-label">Est. Chapters</div>
+                    </div>
+                </div>
             </div>
-            <div class="progress-bar">
-                <div class="progress-fill" id="progressFill" style="width: 0%">0 / 80,000</div>
-            </div>
-            <div class="stats-row">
-                <div class="stat">
-                    <div class="stat-value" id="currentWords">0</div>
-                    <div class="stat-label">Words Written</div>
+            
+            <div class="grid">
+                <!-- Main Column -->
+                <div>
+                    <!-- Chapters -->
+                    <div class="card">
+                        <h2>📖 Chapters</h2>
+                        <ul class="chapter-list" id="chapterList">
+                            <!-- Populated by JS -->
+                        </ul>
+                    </div>
                 </div>
-                <div class="stat">
-                    <div class="stat-value">80,000</div>
-                    <div class="stat-label">Target</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-value" id="chaptersDone">0</div>
-                    <div class="stat-label">Chapters Done</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-value" id="estChapters">20</div>
-                    <div class="stat-label">Est. Chapters</div>
+                
+                <!-- Sidebar -->
+                <div>
+                    <!-- Bible -->
+                    <div class="card">
+                        <h2>📚 Continuity Bible</h2>
+                        <div class="bible-item">
+                            <span>Characters</span>
+                            <span id="bibleChars">2</span>
+                        </div>
+                        <div class="bible-item">
+                            <span>World Rules</span>
+                            <span id="bibleWorld">3</span>
+                        </div>
+                        <div class="bible-item">
+                            <span>Events Log</span>
+                            <span id="bibleEvents">3</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Assets -->
+                    <div class="card">
+                        <h2>🎨 Assets</h2>
+                        <div class="asset-grid">
+                            <div class="asset">
+                                <div class="asset-icon">🖼️</div>
+                                <div class="asset-name">Cover Art</div>
+                                <div class="asset-status" id="coverStatus">Not Started</div>
+                            </div>
+                            <div class="asset">
+                                <div class="asset-icon">🎧</div>
+                                <div class="asset-name">Audiobook</div>
+                                <div class="asset-status" id="audioStatus">Not Started</div>
+                            </div>
+                            <div class="asset">
+                                <div class="asset-icon">📕</div>
+                                <div class="asset-name">EPUB</div>
+                                <div class="asset-status" id="epubStatus">Not Started</div>
+                            </div>
+                            <div class="asset">
+                                <div class="asset-icon">📄</div>
+                                <div class="asset-name">PDF</div>
+                                <div class="asset-status" id="pdfStatus">Not Started</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         
-        <div class="grid">
-            <!-- Main Column -->
-            <div>
-                <!-- Chapters -->
-                <div class="card">
-                    <h2>📖 Chapters</h2>
-                    <ul class="chapter-list" id="chapterList">
-                        <!-- Populated by JS -->
-                    </ul>
+        <!-- READ TAB -->
+        <div id="tab-read" class="tab-content hidden">
+            <div class="card">
+                <div class="chapter-header">
+                    <button class="back-btn hidden" id="backToChapters">← Back to Chapters</button>
+                    <h2 id="readingTitle">Select a chapter to read</h2>
                 </div>
-                
-                <!-- Activity -->
-                <div class="card">
-                    <h2>📋 Recent Activity</h2>
-                    <ul class="activity-list" id="activityList">
-                        <li class="activity-item"><span class="activity-time">Today</span> Book Factory initialized</li>
-                    </ul>
+                <div id="chapterDisplay">
+                    <p style="color: var(--text-muted);">Click on a chapter in the list to read it.</p>
                 </div>
             </div>
-            
-            <!-- Sidebar -->
-            <div>
-                <!-- Bible -->
-                <div class="card">
-                    <h2>📚 Continuity Bible</h2>
-                    <div class="bible-item">
-                        <span>Characters</span>
-                        <span id="bibleChars">2</span>
-                    </div>
-                    <div class="bible-item">
-                        <span>World Rules</span>
-                        <span id="bibleWorld">3</span>
-                    </div>
-                    <div class="bible-item">
-                        <span>Events Log</span>
-                        <span id="bibleEvents">2</span>
-                    </div>
+        </div>
+        
+        <!-- BRANCHES TAB -->
+        <div id="tab-branches" class="tab-content hidden">
+            <div class="card">
+                <h2>🧭 Chapter 4 Branches</h2>
+                <p style="color: var(--text-muted); margin-bottom: 20px;">Choose the direction for the next chapter:</p>
+                
+                <div id="branchesList">
+                    <!-- Populated by JS -->
                 </div>
                 
-                <!-- Assets -->
-                <div class="card">
-                    <h2>🎨 Assets</h2>
-                    <div class="asset-grid">
-                        <div class="asset">
-                            <div class="asset-icon">🖼️</div>
-                            <div class="asset-name">Cover Art</div>
-                            <div class="asset-status" id="coverStatus">Not Started</div>
-                        </div>
-                        <div class="asset">
-                            <div class="asset-icon">🎧</div>
-                            <div class="asset-name">Audiobook</div>
-                            <div class="asset-status" id="audioStatus">Not Started</div>
-                        </div>
-                        <div class="asset">
-                            <div class="asset-icon">📕</div>
-                            <div class="asset-name">EPUB</div>
-                            <div class="asset-status" id="epubStatus">Not Started</div>
-                        </div>
-                        <div class="asset">
-                            <div class="asset-icon">📄</div>
-                            <div class="asset-name">PDF</div>
-                            <div class="asset-status" id="pdfStatus">Not Started</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Series Info -->
-                <div class="card">
-                    <h2>🔗 Series: The Last Tide</h2>
-                    <div class="bible-item">
-                        <span>Book</span>
-                        <span>1 of TBD</span>
-                    </div>
-                    <div class="bible-item">
-                        <span>Genre</span>
-                        <span>Near-Future Sci-Fi</span>
-                    </div>
-                    <div class="bible-item">
-                        <span>Voice</span>
-                        <span>Han Solo / Witty</span>
-                    </div>
-                    <div class="bible-item">
-                        <span>Quality Tier</span>
-                        <span>Premium</span>
-                    </div>
+                <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border);">
+                    <p style="font-size: 0.9rem; color: var(--text-muted);">Pick a branch to continue the story.</p>
                 </div>
             </div>
         </div>
         
         <div class="footer">
-            Last updated: <span id="lastUpdated">--</span> | <a href="#" style="color: var(--accent);">Refresh</a>
+            Last updated: <span id="lastUpdated">--</span> | <a href="https://github.com/percivaltheai/percy-book-factory" target="_blank" style="color: var(--accent);">GitHub</a>
         </div>
     </div>
     
     <script>
-        // Book Data - Edit this to update progress
+        // Book Data
         const bookData = {
             title: "THE LAST TIDE",
             targetWords: 80000,
-            currentWords: 7800, // Update this
+            currentWords: 7800,
             chapters: [
                 { num: 1, title: "The Last Natural Ocean", words: 2800, status: "done" },
                 { num: 2, title: "The Summons", words: 2400, status: "done" },
-                { num: 3, title: "TBD", words: 0, status: "drafting" },
-                { num: 4, title: "TBD", words: 0, status: "planned" },
-                { num: 5, title: "TBD", words: 0, status: "planned" },
-                // Add more chapters as needed
+                { num: 3, title: "Deal Maker", words: 2600, status: "done" },
+                { num: 4, title: "TBD", words: 0, status: "planned" }
             ],
             bible: {
                 characters: 2,
                 worldRules: 3,
-                events: 2
+                events: 3
             },
             assets: {
                 cover: false,
                 audio: false,
                 epub: false,
                 pdf: false
+            },
+            branches: [
+                {
+                    path: "The Whistleblower",
+                    direction: "Rachel discovers a leaked document exposing Marcus Thompson's involvement in synthetic water technology, revealing a larger conspiracy. Dr. Lee and Rachel decide to meet with the whistleblower.",
+                    consequence: "This path leads to an intense investigation that puts them directly in harm's way."
+                },
+                {
+                    path: "Dr. Patel's Warning",
+                    direction: "Dr. Patel reveals that synthetic water technology poses a significant threat to aquatic ecosystems and warns Dr. Lee about the potential consequences.",
+                    consequence: "This path adds a layer of complexity to Dr. Lee's character development."
+                },
+                {
+                    path: "The Rival Scientist",
+                    direction: "Dr. Patel reveals that she has been working on a competing synthetic water project and challenges Dr. Lee to a scientific duel.",
+                    consequence: "This path creates an air of rivalry between Dr. Lee and Dr. Patel."
+                },
+                {
+                    path: "The Personal Connection",
+                    direction: "Rachel discovers that her own family has been affected by synthetic water technology in the past. She uncovers a personal connection between Marcus Thompson and her deceased father.",
+                    consequence: "This path humanizes Rachel's character and deepens her emotional investment."
+                }
+            ],
+            // Chapter content (full text)
+            chapterTexts: {
+                1: `Chapter 1: The Last Natural Ocean
+
+[Full chapter text would be loaded here...]
+
+Dr. Lee stepped out of the sleek, silver elevator and into the opulent lobby of the New Atlantis dome. The soft glow of luminescent tiles illuminated her path as she made her way to the CEO's office. She couldn't shake the feeling that she'd just been played.`,
+                2: `Chapter 2: The Summons
+
+[Full chapter text would be loaded here...]`,
+                3: `Chapter 3: Deal Maker
+
+Dr. Lee stepped out of the sleek, silver elevator and into the opulent lobby of the New Atlantis dome. The soft glow of luminescent tiles illuminated her path as she made her way to the CEO's office. She couldn't shake the feeling that she'd just been played.
+
+Rachel, her partner in both business and life, had warned her about the CEO's charm offensive. "He's got a silver tongue, Lee," Rachel had said over dinner the night before. "But trust me, he's got an axe to grind."
+
+Dr. Lee smiled wryly as she approached the reception desk. The AI assistant, a polished android with skin like polished mahogany, greeted her with a warm smile.
+
+"Good morning, Dr. Lee. You're right on time for your meeting with the CEO. Shall I show you in?"
+
+Lee nodded, and the AI led her to a spacious office with floor-to-ceiling windows offering a breathtaking view of the artificial ocean.
+
+CEO Thompson, a tall, imposing figure with chiseled features and a winning smile, rose from behind his desk to greet Dr. Lee. "Ah, Dr. Lee, it's a pleasure to finally meet you in person. I hope you're ready to discuss the future of water."
+
+Lee flashed him her professional smile. "I'm always ready to talk business, Mr. Thompson."
+
+Thompson chuckled and offered her a seat. "Please, call me Marcus. And, Dr. Lee, I believe we can help each other quite a bit."
+
+As they sat down, Lee couldn't shake the feeling that she was playing into his hands. She'd seen the numbers – the sales figures were off the charts, and people were willing to pay top dollar for the chance to own a piece of the last natural ocean on Earth.
+
+"So, Dr. Lee," Thompson said, leaning back in his chair, "I've heard you're quite the expert on aquatic ecosystems."
+
+Lee raised an eyebrow. "Is that so? And what makes you think I'd be interested in discussing water?"
+
+Thompson smiled. "Let's just say we have a vested interest in your expertise. You see, Dr. Lee, the ocean is...dead. But our sales figures are still rising. It's a paradox, isn't it?"
+
+Lee leaned forward, her eyes locked on Thompson's. "I think I know what you're getting at, Marcus. You're trying to sell me on some new technology that claims to be a sustainable alternative to water."
+
+Thompson's smile grew wider. "Ah, you're sharp, Dr. Lee. Very sharp indeed. But let me tell you, this isn't just about selling a product – it's about changing the world."
+
+Lee raised an eyebrow. "Changing the world? I'm not sure that's your department, Marcus."
+
+Thompson leaned forward, his eyes glinting with intensity. "You'd be surprised what a little innovation can do, Dr. Lee. And I think we could help each other out...big time."
+
+The meeting continued in this vein for another hour, with Thompson dropping hints and veiled threats about the true nature of the water replacement technology. Lee listened intently, her mind racing with possibilities.
+
+Finally, as they wrapped up their discussion, Thompson leaned back in his chair and smiled at her. "So, Dr. Lee? Will you be joining us on this journey?"
+
+Lee hesitated for a fraction of a second before answering. "I need to talk to Rachel about it."
+
+Thompson's smile faltered for an instant before he recovered. "Of course, of course. I'll send the contract your way. We can discuss the details over dinner sometime soon."
+
+As Lee left the office, she felt a shiver run down her spine. She knew Rachel would be thrilled to get her hands on that contract – and she also knew they had to tread carefully.
+
+The water replacement conspiracy was just getting started, and Dr. Lee was about to become a key player in its unfolding drama.
+
+As she stepped out into the lobby, Rachel greeted her with a look of concern. "How was it? Did you get anything concrete?"
+
+Lee filled her in on Thompson's claims and hints about the synthetic water technology. Rachel listened intently, her eyes growing wider by the minute.
+
+"Well, that's just peachy," Rachel said when Lee finished. "But we need to talk to someone else – someone who knows what they're doing."
+
+Dr. Lee raised an eyebrow. "Who did you have in mind?"
+
+Rachel smiled mischievously. "I was thinking of calling up our old friend, Dr. Patel. He's the leading expert on aquatic biology – and he's not exactly a fan of synthetic water either."
+
+Lee nodded thoughtfully. "Sounds like a plan. Let's get him on the phone and see what we can dig up."
+
+As they walked out of the dome together, Lee couldn't shake the feeling that she was being pulled into something much bigger than herself – something that could change the course of human history.
+
+And she wasn't sure if she was ready for it.`
             }
         };
         
-        // Render
-        function render() {
-            const percent = Math.round((bookData.currentWords / bookData.targetWords) * 100);
-            const chaptersDone = bookData.chapters.filter(c => c.status === "done").length;
-            const totalChapters = Math.ceil(bookData.targetWords / 4000); // ~4k words/chapter estimate
-            
-            document.getElementById('progressFill').style.width = percent + '%';
-            document.getElementById('progressFill').textContent = bookData.currentWords.toLocaleString() + ' / ' + bookData.targetWords.toLocaleString();
-            document.getElementById('percentage').textContent = percent + '%';
-            document.getElementById('currentWords').textContent = bookData.currentWords.toLocaleString();
-            document.getElementById('chaptersDone').textContent = chaptersDone;
-            document.getElementById('estChapters').textContent = totalChapters;
-            
-            // Bible
-            document.getElementById('bibleChars').textContent = bookData.bible.characters;
-            document.getElementById('bibleWorld').textContent = bookData.bible.worldRules;
-            document.getElementById('bibleEvents').textContent = bookData.bible.events;
-            
-            // Assets
-            document.getElementById('coverStatus').textContent = bookData.assets.cover ? "Done" : "Not Started";
-            document.getElementById('audioStatus').textContent = bookData.assets.audio ? "Done" : "Not Started";
-            document.getElementById('epubStatus').textContent = bookData.assets.epub ? "Done" : "Not Started";
-            document.getElementById('pdfStatus').textContent = bookData.assets.pdf ? "Done" : "Not Started";
-            
-            // Chapters
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+                tab.classList.add('active');
+                document.getElementById('tab-' + tab.dataset.tab).classList.remove('hidden');
+            });
+        });
+        
+        // Render functions
+        function renderChapters() {
             const chapterList = document.getElementById('chapterList');
             chapterList.innerHTML = bookData.chapters.map(ch => `
-                <li class="chapter-item">
+                <li class="chapter-item" onclick="readChapter(${ch.num})">
                     <div class="chapter-num">${ch.num}</div>
                     <div class="chapter-info">
                         <div class="chapter-title">${ch.title}</div>
@@ -392,12 +543,55 @@
                     <span class="status status-${ch.status}">${ch.status}</span>
                 </li>
             `).join('');
-            
-            // Last updated
-            document.getElementById('lastUpdated').textContent = new Date().toLocaleString();
         }
         
-        render();
+        function renderBranches() {
+            const branchesList = document.getElementById('branchesList');
+            branchesList.innerHTML = bookData.branches.map((b, i) => `
+                <div class="branch" onclick="selectBranch(${i})">
+                    <div class="branch-header">
+                        <span class="branch-path">${String.fromCharCode(65 + i)}. ${b.path}</span>
+                    </div>
+                    <div class="branch-direction">${b.direction}</div>
+                    <div class="branch-consequence">→ ${b.consequence}</div>
+                </div>
+            `).join('');
+        }
+        
+        function readChapter(num) {
+            // Switch to read tab
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+            document.querySelector('[data-tab="read"]').classList.add('active');
+            document.getElementById('tab-read').classList.remove('hidden');
+            
+            const ch = bookData.chapters.find(c => c.num === num);
+            document.getElementById('readingTitle').textContent = `Chapter ${num}: ${ch.title}`;
+            document.getElementById('backToChapters').classList.remove('hidden');
+            
+            const text = bookData.chapterTexts[num] || '[Chapter text not available]';
+            document.getElementById('chapterDisplay').innerHTML = `<div class="chapter-text">${text}</div>`;
+        }
+        
+        function selectBranch(index) {
+            document.querySelectorAll('.branch').forEach((b, i) => {
+                b.classList.toggle('selected', i === index);
+            });
+            alert(`Branch "${bookData.branches[index].path}" selected! Percy will generate Chapter 4 based on this choice.`);
+        }
+        
+        // Init
+        renderChapters();
+        renderBranches();
+        
+        document.getElementById('backToChapters').addEventListener('click', () => {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+            document.querySelector('[data-tab="read"]').classList.add('active');
+            document.getElementById('tab-read').classList.remove('hidden');
+        });
+        
+        document.getElementById('lastUpdated').textContent = new Date().toLocaleString();
     </script>
 </body>
 </html>
