@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Percy's Book Factory</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --bg-dark: #0d1117;
+            --bg-card: #161b22;
+            --border: #30363d;
+            --text-main: #c9d1d9;
+            --text-muted: #8b949e;
+            --accent: #58a6ff;
+            --accent-green: #3fb950;
+            --accent-yellow: #d29922;
+            --accent-red: #f85149;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-main);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 30px;
+        }
+        header h1 { font-size: 1.5rem; display: flex; align-items: center; gap: 10px; }
+        .lobster { font-size: 1.8rem; }
+        
+        /* Progress Bar */
+        .progress-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .progress-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
+        .progress-bar {
+            height: 24px;
+            background: var(--bg-dark);
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent) 0%, var(--accent-green) 100%);
+            border-radius: 12px;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 10px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--bg-dark);
+            min-width: fit-content;
+            padding-left: 10px;
+        }
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .stat {
+            background: var(--bg-dark);
+            padding: 12px;
+            border-radius: 6px;
+            text-align: center;
+        }
+        .stat-value { font-size: 1.5rem; font-weight: 700; color: var(--accent); }
+        .stat-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; }
+        
+        /* Grid */
+        .grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+        @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+        
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .card h2 { 
+            font-size: 1rem; 
+            margin-bottom: 15px; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px;
+        }
+        
+        /* Chapter List */
+        .chapter-list { list-style: none; }
+        .chapter-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+            gap: 12px;
+        }
+        .chapter-item:last-child { border-bottom: none; }
+        .chapter-num {
+            width: 32px;
+            height: 32px;
+            background: var(--bg-dark);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+        .chapter-info { flex: 1; }
+        .chapter-title { font-weight: 500; }
+        .chapter-words { font-size: 0.8rem; color: var(--text-muted); }
+        
+        /* Status badges */
+        .status {
+            font-size: 0.7rem;
+            padding: 3px 8px;
+            border-radius: 12px;
+            text-transform: uppercase;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        .status-done { background: rgba(63, 185, 80, 0.2); color: var(--accent-green); }
+        .status-drafting { background: rgba(210, 153, 34, 0.2); color: var(--accent-yellow); }
+        .status-planned { background: rgba(139, 148, 158, 0.2); color: var(--text-muted); }
+        
+        /* Bible & Assets */
+        .bible-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+        .bible-item:last-child { border-bottom: none; }
+        
+        .asset-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        .asset {
+            background: var(--bg-dark);
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+        }
+        .asset-icon { font-size: 1.5rem; margin-bottom: 5px; }
+        .asset-name { font-size: 0.8rem; font-weight: 500; }
+        .asset-status { font-size: 0.7rem; color: var(--text-muted); margin-top: 5px; }
+        
+        /* Activity */
+        .activity-list { list-style: none; }
+        .activity-item {
+            padding: 8px 0;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border);
+        }
+        .activity-item:last-child { border-bottom: none; }
+        .activity-time { color: var(--accent); font-size: 0.75rem; }
+        
+        /* Last Updated */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+        
+        /* Status Indicator */
+        .indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 6px;
+        }
+        .indicator-green { background: var(--accent-green); }
+        .indicator-yellow { background: var(--accent-yellow); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><span class="lobster">🦞</span> Percy's Book Factory</h1>
+            <div id="status"><span class="indicator indicator-green"></span>Live</div>
+        </header>
+        
+        <!-- Progress Section -->
+        <div class="progress-section">
+            <div class="progress-header">
+                <span><strong>THE LAST TIDE</strong> — Near-Future AI Sci-Fi</span>
+                <span id="percentage">0%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%">0 / 80,000</div>
+            </div>
+            <div class="stats-row">
+                <div class="stat">
+                    <div class="stat-value" id="currentWords">0</div>
+                    <div class="stat-label">Words Written</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">80,000</div>
+                    <div class="stat-label">Target</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="chaptersDone">0</div>
+                    <div class="stat-label">Chapters Done</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="estChapters">20</div>
+                    <div class="stat-label">Est. Chapters</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="grid">
+            <!-- Main Column -->
+            <div>
+                <!-- Chapters -->
+                <div class="card">
+                    <h2>📖 Chapters</h2>
+                    <ul class="chapter-list" id="chapterList">
+                        <!-- Populated by JS -->
+                    </ul>
+                </div>
+                
+                <!-- Activity -->
+                <div class="card">
+                    <h2>📋 Recent Activity</h2>
+                    <ul class="activity-list" id="activityList">
+                        <li class="activity-item"><span class="activity-time">Today</span> Book Factory initialized</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Sidebar -->
+            <div>
+                <!-- Bible -->
+                <div class="card">
+                    <h2>📚 Continuity Bible</h2>
+                    <div class="bible-item">
+                        <span>Characters</span>
+                        <span id="bibleChars">2</span>
+                    </div>
+                    <div class="bible-item">
+                        <span>World Rules</span>
+                        <span id="bibleWorld">3</span>
+                    </div>
+                    <div class="bible-item">
+                        <span>Events Log</span>
+                        <span id="bibleEvents">2</span>
+                    </div>
+                </div>
+                
+                <!-- Assets -->
+                <div class="card">
+                    <h2>🎨 Assets</h2>
+                    <div class="asset-grid">
+                        <div class="asset">
+                            <div class="asset-icon">🖼️</div>
+                            <div class="asset-name">Cover Art</div>
+                            <div class="asset-status" id="coverStatus">Not Started</div>
+                        </div>
+                        <div class="asset">
+                            <div class="asset-icon">🎧</div>
+                            <div class="asset-name">Audiobook</div>
+                            <div class="asset-status" id="audioStatus">Not Started</div>
+                        </div>
+                        <div class="asset">
+                            <div class="asset-icon">📕</div>
+                            <div class="asset-name">EPUB</div>
+                            <div class="asset-status" id="epubStatus">Not Started</div>
+                        </div>
+                        <div class="asset">
+                            <div class="asset-icon">📄</div>
+                            <div class="asset-name">PDF</div>
+                            <div class="asset-status" id="pdfStatus">Not Started</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Series Info -->
+                <div class="card">
+                    <h2>🔗 Series: The Last Tide</h2>
+                    <div class="bible-item">
+                        <span>Book</span>
+                        <span>1 of TBD</span>
+                    </div>
+                    <div class="bible-item">
+                        <span>Genre</span>
+                        <span>Near-Future Sci-Fi</span>
+                    </div>
+                    <div class="bible-item">
+                        <span>Voice</span>
+                        <span>Han Solo / Witty</span>
+                    </div>
+                    <div class="bible-item">
+                        <span>Quality Tier</span>
+                        <span>Premium</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            Last updated: <span id="lastUpdated">--</span> | <a href="#" style="color: var(--accent);">Refresh</a>
+        </div>
+    </div>
+    
+    <script>
+        // Book Data - Edit this to update progress
+        const bookData = {
+            title: "THE LAST TIDE",
+            targetWords: 80000,
+            currentWords: 5200, // Update this
+            chapters: [
+                { num: 1, title: "The Last Natural Ocean", words: 2800, status: "done" },
+                { num: 2, title: "The Summons", words: 2400, status: "done" },
+                { num: 3, title: "TBD", words: 0, status: "drafting" },
+                { num: 4, title: "TBD", words: 0, status: "planned" },
+                { num: 5, title: "TBD", words: 0, status: "planned" },
+                // Add more chapters as needed
+            ],
+            bible: {
+                characters: 2,
+                worldRules: 3,
+                events: 2
+            },
+            assets: {
+                cover: false,
+                audio: false,
+                epub: false,
+                pdf: false
+            }
+        };
+        
+        // Render
+        function render() {
+            const percent = Math.round((bookData.currentWords / bookData.targetWords) * 100);
+            const chaptersDone = bookData.chapters.filter(c => c.status === "done").length;
+            const totalChapters = Math.ceil(bookData.targetWords / 4000); // ~4k words/chapter estimate
+            
+            document.getElementById('progressFill').style.width = percent + '%';
+            document.getElementById('progressFill').textContent = bookData.currentWords.toLocaleString() + ' / ' + bookData.targetWords.toLocaleString();
+            document.getElementById('percentage').textContent = percent + '%';
+            document.getElementById('currentWords').textContent = bookData.currentWords.toLocaleString();
+            document.getElementById('chaptersDone').textContent = chaptersDone;
+            document.getElementById('estChapters').textContent = totalChapters;
+            
+            // Bible
+            document.getElementById('bibleChars').textContent = bookData.bible.characters;
+            document.getElementById('bibleWorld').textContent = bookData.bible.worldRules;
+            document.getElementById('bibleEvents').textContent = bookData.bible.events;
+            
+            // Assets
+            document.getElementById('coverStatus').textContent = bookData.assets.cover ? "Done" : "Not Started";
+            document.getElementById('audioStatus').textContent = bookData.assets.audio ? "Done" : "Not Started";
+            document.getElementById('epubStatus').textContent = bookData.assets.epub ? "Done" : "Not Started";
+            document.getElementById('pdfStatus').textContent = bookData.assets.pdf ? "Done" : "Not Started";
+            
+            // Chapters
+            const chapterList = document.getElementById('chapterList');
+            chapterList.innerHTML = bookData.chapters.map(ch => `
+                <li class="chapter-item">
+                    <div class="chapter-num">${ch.num}</div>
+                    <div class="chapter-info">
+                        <div class="chapter-title">${ch.title}</div>
+                        <div class="chapter-words">${ch.words.toLocaleString()} words</div>
+                    </div>
+                    <span class="status status-${ch.status}">${ch.status}</span>
+                </li>
+            `).join('');
+            
+            // Last updated
+            document.getElementById('lastUpdated').textContent = new Date().toLocaleString();
+        }
+        
+        render();
+    </script>
+</body>
+</html>
