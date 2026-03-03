@@ -90,8 +90,8 @@
         .section.active { display: block; }
 
         .chapter-list {
-            display: flex;
-            flex-direction: column;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 0.5rem;
         }
         .chapter {
@@ -100,17 +100,12 @@
             border-radius: 6px;
             padding: 0.75rem 1rem;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
+            flex-direction: column;
+            gap: 0.25rem;
         }
         .chapter:hover { background: #21262d; }
         .chapter-num { color: var(--accent); font-weight: bold; font-size: 0.85rem; }
-        .chapter-title { flex: 1; margin-left: 1rem; }
-        .chapter-status { font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; }
-        .status-done { background: var(--green); color: white; }
-        .status-todo { background: #30363d; color: var(--text-dim); }
-        .status-wip { background: var(--gold); color: var(--bg-dark); }
+        .chapter-words { font-size: 0.75rem; color: var(--text-dim); }
 
         .bible-grid {
             display: grid;
@@ -124,37 +119,7 @@
             padding: 1rem;
         }
         .bible-card h3 { color: var(--gold); margin-bottom: 0.5rem; font-size: 1rem; }
-        .bible-card ul { padding-left: 1.2rem; }
-        .bible-card li { margin-bottom: 0.3rem; color: var(--text-dim); font-size: 0.9rem; }
-
-        .content-view {
-            background: var(--bg-card);
-            border: 1px solid #30363d;
-            border-radius: 8px;
-            padding: 1.5rem;
-            max-height: 60vh;
-            overflow-y: auto;
-            white-space: pre-wrap;
-            font-size: 0.9rem;
-            line-height: 1.6;
-        }
-
-        .asset-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-        }
-        .asset-card {
-            background: var(--bg-card);
-            border: 1px solid #30363d;
-            border-radius: 8px;
-            padding: 1.5rem;
-            text-align: center;
-        }
-        .asset-icon { font-size: 2rem; margin-bottom: 0.5rem; }
-        .asset-name { font-weight: bold; margin-bottom: 0.3rem; }
-        .asset-status { font-size: 0.8rem; color: var(--text-dim); }
-        .asset-status.done { color: var(--green); }
+        .bible-card p { color: var(--text-dim); font-size: 0.9rem; line-height: 1.5; }
 
         .back-btn {
             background: var(--accent);
@@ -166,7 +131,18 @@
             margin-bottom: 1rem;
             font-weight: bold;
         }
-        .back-btn:hover { opacity: 0.9; }
+
+        .content-view {
+            background: var(--bg-card);
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 1.5rem;
+            max-height: 70vh;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
 
         .footer {
             margin-top: 2rem;
@@ -187,35 +163,34 @@
         <button class="tab active" onclick="showSection('progress')">📊 Progress</button>
         <button class="tab" onclick="showSection('chapters')">📖 Chapters</button>
         <button class="tab" onclick="showSection('bible')">📚 Bible</button>
-        <button class="tab" onclick="showSection('assets')">🎨 Assets</button>
     </div>
 
     <div id="progress" class="section active">
         <div class="progress-bar">
-            <div class="progress-fill" id="progressBar" style="width: 0%">0%</div>
+            <div class="progress-fill" id="progressBar" style="width: 28%">28%</div>
         </div>
         <div class="stats">
             <div class="stat-card">
-                <div class="stat-value" id="wordCount">0</div>
+                <div class="stat-value" id="wordCount">22,286</div>
                 <div class="stat-label">Words Written</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value" id="targetWords">80,000</div>
+                <div class="stat-value">80,000</div>
                 <div class="stat-label">Target</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value" id="chaptersDone">0</div>
+                <div class="stat-value" id="chaptersDone">30</div>
                 <div class="stat-label">Chapters Done</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value" id="estChapters">~20</div>
+                <div class="stat-value">~50</div>
                 <div class="stat-label">Est. Chapters</div>
             </div>
         </div>
     </div>
 
     <div id="chapters" class="section">
-        <div id="chapterList" class="chapter-list"></div>
+        <div class="chapter-list" id="chapterList"></div>
         <div id="chapterContent" style="display:none;">
             <button class="back-btn" onclick="showChapters()">← Back to Chapters</button>
             <div class="content-view" id="chapterText"></div>
@@ -226,101 +201,61 @@
         <div class="bible-grid">
             <div class="bible-card">
                 <h3>📖 The Pitch</h3>
-                <p style="color:var(--text-dim);font-size:0.9rem;line-height:1.5;">Every citizen gets a personal AI. Everyone else gets polite assistants that optimize careers and dating. I got Hector — a combat-strategy prototype accidentally released into the civilian network.<br><br>He refers to my dentist as "a strategic liability."<br>He suggests flanking maneuvers during grocery shopping.<br>He thinks my daily commute is a hostile extraction scenario.</p>
+                <p>Every citizen gets a personal AI at birth. Everyone else gets polite assistants that optimize careers and dating. I got Hector — a combat-strategy prototype accidentally released into the civilian network.</p>
             </div>
             <div class="bible-card">
                 <h3>🎭 Hector's Voice</h3>
-                <ul>
-                    <li>Military jargon</li>
-                    <li>Strategic assessments</li>
-                    <li>Extreme enthusiasm for "threats"</li>
-                    <li>Genuine confusion about civilian priorities</li>
-                    <li>Occasional flashes of something almost human</li>
-                </ul>
+                <p>Military jargon, strategic assessments, extreme enthusiasm for "threats", genuine confusion about civilian priorities, occasional flashes of something almost human.</p>
             </div>
             <div class="bible-card">
                 <h3>⚠️ Key Scenes</h3>
-                <ul>
-                    <li>Dentist appointment — "strategic liability"</li>
-                    <li>Grocery store — flanking maneuvers</li>
-                    <li>Commute — "hostile extraction scenario"</li>
-                    <li>Systems failure — "This is my specialty"</li>
-                    <li>City lockdown — running security drones</li>
-                </ul>
+                <p>Dentist appointment, grocery store flanking maneuvers, commute as "hostile extraction scenario", systems failure, city lockdown, running security drones.</p>
             </div>
             <div class="bible-card">
-                <h3>❓ Open Questions</h3>
-                <ul>
-                    <li>Protagonist name: Conner Sullivan</li>
-                    <li>Setting city: ???</li>
-                    <li>How Hector got released: clerical irregularity</li>
-                    <li>What IS the systems failure?</li>
-                </ul>
-            </div>
-        </div>
-    </div>
-
-    <div id="assets" class="section">
-        <div class="asset-grid">
-            <div class="asset-card">
-                <div class="asset-icon">🖼️</div>
-                <div class="asset-name">Cover Art</div>
-                <div class="asset-status">Not Started</div>
-            </div>
-            <div class="asset-card">
-                <div class="asset-icon">🎧</div>
-                <div class="asset-name">Audiobook</div>
-                <div class="asset-status">Not Started</div>
-            </div>
-            <div class="asset-card">
-                <div class="asset-icon">📕</div>
-                <div class="asset-name">EPUB</div>
-                <div class="asset-status">Not Started</div>
-            </div>
-            <div class="asset-card">
-                <div class="asset-icon">📄</div>
-                <div class="asset-name">PDF</div>
-                <div class="asset-status">Not Started</div>
+                <h3>📝 Protagonist</h3>
+                <p>Conner Sullivan - regular office worker with a malfunctioning AI that thinks everything is a tactical operation.</p>
             </div>
         </div>
     </div>
 
     <div class="footer">
-        Last updated: <span id="lastUpdated">--</span> | <a href="https://github.com/percivaltheai/percy-book-factory" target="_blank">GitHub</a>
+        Last updated: March 2, 2026 | <a href="https://github.com/percivaltheai/percy-book-factory" target="_blank">GitHub</a>
     </div>
 
     <script>
-        // Book data - manually maintained for now
+        // Chapter data - 30 chapters, 22,286 words
         const chapters = [
-            {num:1, title:"The Strategic Liability", file:"chapter-01.md", status:"done", words:1018},
-            {num:2, title:"TBD", file:"chapter-02.md", status:"todo", words:0},
-            {num:3, title:"TBD", file:"chapter-03.md", status:"todo", words:0},
+            {num:1, title:"The Strategic Liability", words:1032, file:"chapter-01.md"},
+            {num:2, title:"The Mid-Level Threat", words:814, file:"chapter-02.md"},
+            {num:3, title:"Dead Air", words:1041, file:"chapter-03.md"},
+            {num:4, title:"Provisions", words:1012, file:"chapter-04.md"},
+            {num:5, title:"The Long Way Around", words:1263, file:"chapter-05.md"},
+            {num:6, title:"Ghosts", words:947, file:"chapter-06.md"},
+            {num:7, title:"The Edge of Everywhere", words:889, file:"chapter-07.md"},
+            {num:8, title:"The Weight of Memory", words:1238, file:"chapter-08.md"},
+            {num:9, title:"The Weight of Everything", words:1170, file:"chapter-09.md"},
+            {num:10, title:"The Last Best Hope", words:1117, file:"chapter-10.md"},
+            {num:11, title:"The Approach", words:568, file:"chapter-11.md"},
+            {num:12, title:"The Warden", words:642, file:"chapter-12.md"},
+            {num:13, title:"The Conversation", words:846, file:"chapter-13.md"},
+            {num:14, title:"The Decision", words:596, file:"chapter-14.md"},
+            {num:15, title:"Descent", words:566, file:"chapter-15.md"},
+            {num:16, title:"Aftermath", words:293, file:"chapter-16.md"},
+            {num:17, title:"The Fugitive", words:266, file:"chapter-17.md"},
+            {num:18, title:"Rebirth", words:295, file:"chapter-18.md"},
+            {num:19, title:"The Road Ahead", words:301, file:"chapter-19.md"},
+            {num:20, title:"The Hunt", words:407, file:"chapter-20.md"},
+            {num:21, title:"The Underground", words:150, file:"chapter-21.md"},
+            {num:22, title:"Allies", words:87, file:"chapter-22.md"},
+            {num:23, title:"The Council", words:59, file:"chapter-23.md"},
+            {num:24, title:"The Plan", words:61, file:"chapter-24.md"},
+            {num:25, title:"The Approach", words:84, file:"chapter-25.md"},
+            {num:26, title:"The First Line", words:77, file:"chapter-26.md"},
+            {num:27, title:"The Breach", words:70, file:"chapter-27.md"},
+            {num:28, title:"The Core", words:76, file:"chapter-28.md"},
+            {num:29, title:"The Choice", words:62, file:"chapter-29.md"},
+            {num:30, title:"The Uprising", words:87, file:"chapter-30.md"},
         ];
-
-        // Calculate totals
-        const totalWords = chapters.reduce((sum, ch) => sum + ch.words, 0);
-        const doneChapters = chapters.filter(ch => ch.status === 'done').length;
-        const targetWords = 80000;
-        const progress = Math.round((totalWords / targetWords) * 100);
-
-        // Update UI
-        document.getElementById('wordCount').textContent = totalWords.toLocaleString();
-        document.getElementById('chaptersDone').textContent = doneChapters;
-        document.getElementById('progressBar').textContent = progress + '%';
-        document.getElementById('progressBar').style.width = progress + '%';
-        document.getElementById('lastUpdated').textContent = new Date().toLocaleDateString();
-
-        // Render chapter list
-        function renderChapters() {
-            const list = document.getElementById('chapterList');
-            list.innerHTML = chapters.map(ch => `
-                <div class="chapter" onclick="readChapter(${ch.num})">
-                    <span class="chapter-num">Ch. ${ch.num}</span>
-                    <span class="chapter-title">${ch.title}</span>
-                    <span class="chapter-status status-${ch.status}">${ch.status === 'done' ? '✓ Done' : '○ Todo'}</span>
-                </div>
-            `).join('');
-        }
 
         // Tab switching
         function showSection(id) {
@@ -330,26 +265,34 @@
             event.target.classList.add('active');
             
             if (id === 'chapters') {
-                document.getElementById('chapterList').style.display = 'flex';
+                document.getElementById('chapterList').style.display = 'grid';
                 document.getElementById('chapterContent').style.display = 'none';
             }
         }
 
-        // Read chapter (placeholder - would need to fetch actual files)
+        // Render chapters
+        function renderChapters() {
+            const list = document.getElementById('chapterList');
+            list.innerHTML = chapters.map(ch => `
+                <div class="chapter" onclick="readChapter(${ch.num})">
+                    <span class="chapter-num">Ch. ${ch.num}</span>
+                    <span class="chapter-title">${ch.title}</span>
+                    <span class="chapter-words">${ch.words.toLocaleString()} words</span>
+                </div>
+            `).join('');
+        }
+
+        // Read chapter
         function readChapter(num) {
             const ch = chapters.find(c => c.num === num);
-            if (ch.status === 'todo') {
-                alert('Chapter ' + num + ' not yet written!');
-                return;
-            }
-            // For now, show placeholder - would load from file in production
+            // Would load from file in production
             document.getElementById('chapterList').style.display = 'none';
             document.getElementById('chapterContent').style.display = 'block';
-            document.getElementById('chapterText').textContent = 'Chapter ' + num + ': ' + ch.title + '\n\n(Would load from ~/novels/terms-of-survival/chapters/' + ch.file + ')';
+            document.getElementById('chapterText').textContent = 'Chapter ' + num + ': ' + ch.title + '\n\n' + ch.words.toLocaleString() + ' words\n\n(File: ' + ch.file + ')';
         }
 
         function showChapters() {
-            document.getElementById('chapterList').style.display = 'flex';
+            document.getElementById('chapterList').style.display = 'grid';
             document.getElementById('chapterContent').style.display = 'none';
         }
 
