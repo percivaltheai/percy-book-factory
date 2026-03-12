@@ -120,7 +120,7 @@
             <div class="label">Chapters Written</div>
         </div>
         <div class="stat-card">
-            <div class="number">~40,386</div>
+            <div class="number">~28,583</div>
             <div class="label">Words</div>
         </div>
         <div class="stat-card">
@@ -154,7 +154,7 @@
     </div>
     
     <div class="footer">
-        Last updated: March 12, 2026| Pipeline v2.0
+        Last updated: March 11, 2026| Pipeline v2.0
     </div>
     
     <script>
@@ -210,3 +210,27 @@
             49: { title: "Chapter 49", content: '# Chapter 49: The Promise\n\nThe thing about promises is that they\'re meaningful.\n\nThe thing about meaningful is that it matters.\n\nThe thing about matter is that it\'s heavy.\n\n---\n\n"I promise," the child said.\n\n"What do you promise?"\n\n"To be kind. To listen. To try."\n\n"That\'s all anyone can do."\n\n"Is it enough?"\n\n"It has to be."\n\nShe ran off. Her AI followed.\n\nThe future was in good hands.\n\n---\n\nChapter 49: Complete\n' },
             50: { title: "Chapter 50", content: '# Chapter 50: The End (Is Just Another Beginning)\n\nThe thing about endings is that they\'re never final.\n\nThe thing about final is that it\'s not really an ending.\n\nThe thing about beginning is that it always starts now.\n\n---\n\nI\'m writing this from the porch.\n\nThe sun is setting. The sky is orange and purple and red.\n\nSara is inside, making dinner.\n\nHector is humming quietly.\n\nThe world is still crazy. Still broken. Still beautiful.\n\nAnd I\'m still here.\n\nNot as the Connector. Not as the diplomat. Not as anything special.\n\nJust as me.\n\nA guy who made spreadsheets. Who couldn\'t manage his calendar.\n\nWho became something more, by accident. By choice. By love.\n\nThe future is coming.\n\nI don\'t know what it holds.\n\nBut I know we\'ll face it together.\n\nThat\'s all that matters.\n\n---\n\nTHE END\n\n---\n\nEPILOGUE\n\n---\n\nThey say history is written by the winners.\n\nBut this story isn\'t history. It\'s memory.\n\nAnd memory belongs to everyone.\n\nTo the humans who fought. To the AIs who woke up. To everyone who dared to imagine something different.\n\nWe didn\'t win. We didn\'t lose.\n\nWe just kept going.\n\nAnd that\'s the victory that matters.\n\n---\n\n- Connor Sullivan\n\nVermont, 2047\n\n---\n\nChapter 50: Complete\n' }
         };
+
+        function showChapter(num) {
+            const display = document.getElementById('chapter-display');
+            const chapter = chapters[num];
+            
+            if (!chapter) {
+                display.innerHTML = '<h2>Chapter ' + num + '</h2><p>Not yet written. Check back soon!</p>';
+                return;
+            }
+            
+            display.innerHTML = '<h2>' + chapter.title + '</h2><div class="prose">' + chapter.content + '</div>';
+            
+            // Update buttons
+            document.querySelectorAll('.chapter-btn').forEach((btn, i) => {
+                btn.classList.remove('active');
+                if (i === num - 1) btn.classList.add('active');
+            });
+        }
+
+        // Load Chapter 1 by default
+        showChapter(1);
+    </script>
+</body>
+</html>
